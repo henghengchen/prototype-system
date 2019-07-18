@@ -1,4 +1,4 @@
-package org.umlverification.xml2umlmodel;
+package org.ecsz.xml2umlmodel;
 
 import java.io.File;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package org.umlverification.xml2umlmodel;
+package org.ecsz.xml2umlmodel;
 
 import org.eclipse.uml2.uml.Model;
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.eclipse.uml2.uml_5.3.0.v20170605-1616.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.junit_4.12.0.v201504281640/junit.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.eclipse.emf.ecore_2.13.0.v20170609-0707.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.eclipse.emf.common_2.13.0.v20170609-0707.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.eclipse.uml2.common_2.1.0.v20170605-1616.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.eclipse.uml2.types_2.0.0.v20170605-1616.jar"/>
+	<classpathentry kind="lib" path="D:/eclipse/eclipse-java-oxygen-2-win32-x86_64/eclipse/plugins/org.eclipse.emf.ecore.xmi_2.13.0.v20170609-0707.jar"/>
+	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/新建文件夹/tools/dom4j-2.1.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -11,7 +11,9 @@ import org.eclipse.uml2.uml.Classifier;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
+import org.eclipse.uml2.uml.StateMachine;
 import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.UMLPackage;
 
 public class XML2UMLModel {
 	public static boolean DEBUG = true;
@@ -99,7 +101,7 @@ public class XML2UMLModel {
                 				}
                 			}else if(element4.attributeValue("type").equals("uml:StateMachine")) {
                 				
-                				//StateMachine s = createStateMachine(model_package1,element4.attributeValue("name"));
+                				StateMachine statemachine = createStateMachine(model_package1,element4.attributeValue("name"));
                 				
                 			}else if(element4.attributeValue("type").equals("uml:Trigger")) {
                 				
@@ -178,14 +180,13 @@ public class XML2UMLModel {
 
         return generalization;
     }
-    /*
+    
     protected org.eclipse.uml2.uml.StateMachine createStateMachine(Package package_, String name) {
-        StateMachine s = null;             
-        PackageableElement p=package_.createPackagedElement(name, EcorePackage.getEClass());
+
+    	StateMachine s=(StateMachine) package_.createPackagedElement(name, UMLPackage.eINSTANCE.getStateMachine());
+        out("Class '%s' created.", s.getQualifiedName());
         
-        out("Class '%s' created.", p.getQualifiedName());
-        
-		return (StateMachine) p;
+		return s;
     }
-    */
+    
 }

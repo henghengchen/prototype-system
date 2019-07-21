@@ -34,11 +34,5 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/UML-workspace/prototypesystemBLL/dependencies/org.eclipse.emf.common_2.13.0.v20170609-0707.jar"/>
-	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/UML-workspace/prototypesystemBLL/dependencies/org.eclipse.emf.ecore.xmi_2.13.0.v20170609-0707.jar"/>
-	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/UML-workspace/prototypesystemBLL/dependencies/org.eclipse.emf.ecore_2.13.0.v20170609-0707.jar"/>
-	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/UML-workspace/prototypesystemBLL/dependencies/org.eclipse.uml2.common_2.1.0.v20170605-1616.jar"/>
-	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/UML-workspace/prototypesystemBLL/dependencies/org.eclipse.uml2.types_2.0.0.v20170605-1616.jar"/>
-	<classpathentry kind="lib" path="C:/Users/衡辰/Desktop/项目组/项目实现情况/UML-workspace/prototypesystemBLL/dependencies/org.eclipse.uml2.uml_5.3.0.v20170605-1616.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

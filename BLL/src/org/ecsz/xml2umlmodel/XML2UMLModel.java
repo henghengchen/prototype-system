@@ -16,8 +16,13 @@ import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.Package;
 import org.eclipse.uml2.uml.PackageableElement;
+import org.eclipse.uml2.uml.Region;
+import org.eclipse.uml2.uml.State;
 import org.eclipse.uml2.uml.StateMachine;
+import org.eclipse.uml2.uml.Transition;
 import org.eclipse.uml2.uml.UMLFactory;
+import org.eclipse.uml2.uml.UMLPackage;
+import org.eclipse.uml2.uml.Vertex;
 
 public class XML2UMLModel {
 
@@ -72,7 +77,6 @@ public class XML2UMLModel {
         for (Iterator<Element> it1 = root.elementIterator(); it1.hasNext();) {
         	//it1°üº¬ document   model   extension
             Element element1 = it1.next();
-            
             if(element1.getName().equals("Documentation")){
 
             }else if(element1.getName().equals("Model")) {  
@@ -106,8 +110,39 @@ public class XML2UMLModel {
                 				}
                 			}else if(element4.attributeValue("type").equals("uml:StateMachine")) {
                 				
-                				//StateMachine s = createStateMachine(model_package1,element4.attributeValue("name"));
-                				
+                				StateMachine statemachine = createStateMachine(model_package1,element4.attributeValue("name"));
+                				for(Iterator<Element> it5=element4.elementIterator();it5.hasNext();)  {
+                					//statemachineÏÂµÄregion
+                					Element element5=it5.next();
+                					if(element5.attributeValue("type").equals("uml:Region")) {
+                						Region region1=createRegion(statemachine,element5.attributeValue("name"));
+                						
+                						for(Iterator<Element> it6=element5.elementIterator();it6.hasNext();)  {
+                							
+                							Element element6=it6.next();
+                							if(element6.attributeValue("type").equals("uml:State")) {
+                								Vertex vertex=createState(region1,element6.attributeValue("name"),element6.attributeValue("id"));
+                							}
+                						}
+                						for(Iterator<Element> it6=element5.elementIterator();it6.hasNext();)  {
+                							
+                							Element element6=it6.next();
+                							if(element6.attributeValue("type").equals("uml:Transition")) {
+                								Vertex vertex_source = null;
+                								Vertex vertex_target=null;
+                								for(org.eclipse.uml2.uml.Element vertex: region1.getOwnedElements()){
+                									if(vertex instanceof org.eclipse.uml2.uml.Vertex && vertex.getKeywords().equals(element6.attributeValue("source"))) {
+                										vertex_source=(Vertex) vertex;
+                									}
+                									if(vertex instanceof org.eclipse.uml2.uml.Vertex && vertex.getKeywords().equals(element6.attributeValue("target"))) {
+                										vertex_target=(Vertex) vertex;
+                									}
+                								}
+                								Transition transition=createTransition(region1,element6.attributeValue("id"),vertex_source,vertex_target);
+                							}
+                						}
+                					}
+                				}
                 			}else if(element4.attributeValue("type").equals("uml:Trigger")) {
                 				
                 			}else {
@@ -185,14 +220,37 @@ public class XML2UMLModel {
 
         return generalization;
     }
-    /*
-    protected org.eclipse.uml2.uml.StateMachine createStateMachine(Package package_, String name) {
-        StateMachine s = null;             
-        PackageableElement p=package_.createPackagedElement(name, EcorePackage.getEClass());
+    
+    protected org.eclipse.uml2.uml.StateMachine createStateMachine(Package package_, String name) {     
+        PackageableElement p=package_.createPackagedElement(name, UMLPackage.eINSTANCE.getStateMachine());
         
         out("Class '%s' created.", p.getQualifiedName());
         
 		return (StateMachine) p;
     }
-    */
+   
+    protected Region createRegion(StateMachine sm, String name) {     
+        Region rg=sm.createRegion(name);
+        
+        out("Class '%s' created.", rg.getQualifiedName());
+        
+		return rg;
+    }
+    
+    protected Vertex createState(Region rg, String name,String id) {     
+        Vertex vertex=rg.createSubvertex(name, UMLPackage.eINSTANCE.getState());
+        vertex.addKeyword(id);
+        out("Class '%s' created.", vertex.getQualifiedName());
+        
+		return vertex;
+    }
+    
+    protected Transition createTransition(Region rg, String name,Vertex vertex_source,Vertex vertex_target) {     
+        Transition transition=rg.createTransition(name);
+        transition.setSource(vertex_source);
+        transition.setTarget(vertex_target);
+        out("Class '%s' created.", transition.getQualifiedName());
+        
+		return transition;
+    }
 }

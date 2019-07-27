@@ -1,14 +1,83 @@
 package org.ecsz.xml2umlmodel;
 
-import org.eclipse.uml2.uml.Model;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+import org.ecsz.umlmodel2hautomata.State;
+import org.ecsz.umlmodel2hautomata.TransitionRelation;
+import org.ecsz.model.Model;
+import org.ecsz.model.Package;
+import org.ecsz.statediagram.Region;
+import org.ecsz.statediagram.StateDiagram;
+import org.ecsz.statediagram.StateMachine;
+import org.ecsz.statediagram.Transition;
+import org.ecsz.statediagram.Vertex;
+import org.ecsz.umlmodel2hautomata.HAutoMata;
+import org.ecsz.umlmodel2hautomata.SAutoMata;
+import org.ecsz.umlmodel2hautomata.UMLModel2HAutoMata;
 
 public class Start {
 
-	public static XML2UMLModel xm=new XML2UMLModel("C:\\Users\\衡辰\\Desktop\\项目组\\项目实现情况\\UML-workspace\\BLL\\testmodels\\test5.xml");
-
 	public static void main(String[] args)
 	{
-		xm.getUMLModel();
+		XML2UMLModel xm=new XML2UMLModel("C:\\Users\\衡辰\\Desktop\\项目组\\项目实现情况\\UML-workspace\\BLL\\testmodels\\test5.xml");
+		Model model=xm.getUMLModel();
+		//输出模型
+		//out_model(model);
+		UMLModel2HAutoMata uh=new UMLModel2HAutoMata(model);
+		
+		List<HAutoMata> hautomata_list=uh.getHAutoMata();   
+		//输出自动机
+		out_hautomata(hautomata_list.get(0).getTop_sautomata(),"");
 	}
 	
+	protected static void out_hautomata(SAutoMata hm,String prefix) {
+		SAutoMata top_sm=hm;
+		System.out.println(prefix+"SAutoMata name="+top_sm.getname()+" id="+top_sm.getid());
+		for(Iterator<TransitionRelation> it=top_sm.getHs_transition_relation().iterator();it.hasNext();) {
+			TransitionRelation tr=it.next();
+			System.out.println(prefix+"---transitionrelation SRC="+tr.getSrc_state().getname()+" SR="+tr.getTl().getSr_state().getname()+" EV="+tr.getTl().getEv()+" G="+tr.getTl().getG()+" AC="+tr.getTl().getAc()+" TD="+tr.getTl().getTd_state().getname()+" TGT="+tr.getTgt_state().getname());
+		}
+		for(Iterator<State> it=top_sm.getHs_state().iterator();it.hasNext();) {
+			State state=it.next();
+			System.out.println(prefix+"---State name="+state.getname()+" id="+state.getid()+" up_name="+state.getUp_sautomata().getname());
+			HashSet<SAutoMata> hs_sautomata=state.getHs_nested_sautomata();
+			for(Iterator<SAutoMata> it2=hs_sautomata.iterator();it2.hasNext();) {
+				SAutoMata sm2=it2.next();
+				out_hautomata(sm2,prefix+"---");
+			}
+		}
+	}
+	
+	protected static void out_model(Model model){
+		System.out.println("Mode name="+model.getname()+" id="+model.getid());
+		HashSet<Package> hs_package=model.getPackagesSet();
+		for(Iterator<Package> it_p=hs_package.iterator();it_p.hasNext();) {
+			Package p=it_p.next();
+			System.out.println("---Package name="+p.getname()+" id="+p.getid());
+			HashSet<StateDiagram> hs_sd=p.getStateDiagramsSet();
+			for(Iterator<StateDiagram> it_sd=hs_sd.iterator();it_sd.hasNext();) {
+				StateDiagram sd=it_sd.next();
+				System.out.println("------StateDiagram name="+sd.getname());
+				StateMachine sm=sd.getState_machine();
+				System.out.println("---------StateMachine name="+sm.getname()+" id="+sm.getid());
+				HashSet<Region> hs_region=sm.getregionsSet();
+				for(Iterator<Region> it_region=hs_region.iterator();it_region.hasNext();) {
+					Region region=it_region.next();
+					System.out.println("------------Region name="+region.getname()+" id="+region.getid()+" owner_vertex_id="+region.getOwner_vertex_id());
+					HashSet<Vertex> hs_vertex=region.getvertexsSet();
+					for(Iterator<Vertex> it_vertex=hs_vertex.iterator();it_vertex.hasNext();) {
+						Vertex vertex=it_vertex.next();
+						System.out.println("---------------Vertex name="+vertex.getname()+" id="+vertex.getid()+" owner_region_id="+vertex.getOwner_region_id());
+					}
+					HashSet<Transition> hs_transition=region.getoutgoingtransitionsSet();
+					for(Iterator<Transition> it_transition=hs_transition.iterator();it_transition.hasNext();) {
+						Transition transition=it_transition.next();
+						System.out.println("---------------Transition id="+transition.getid()+" source_vertex_id="+transition.getSource_vertex_id()+" target_vertex_id="+transition.getTarget_vertex_id()+" trigger="+transition.getTrigger()+" guard="+transition.getGuard()+" action="+transition.getAction());
+					}
+				}
+			}
+		}
+	}
 }

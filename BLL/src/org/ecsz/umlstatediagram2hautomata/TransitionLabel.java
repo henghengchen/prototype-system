@@ -1,36 +1,30 @@
-package org.ecsz.umlmodel2hautomata;
+package org.ecsz.umlstatediagram2hautomata;
+
+import java.util.HashSet;
 
 public class TransitionLabel {
 
-	private State sr_state;
+	private HashSet<State> hs_sr_state;
 	private String ev;
 	private String g;
 	private String ac;
-	private State td_state;
+	private HashSet<State> hs_td_state;
 	
-	public TransitionLabel(State a,String b,String c,String d,State e) {
+	public TransitionLabel(String b,String c,String d) {
 		// TODO Auto-generated constructor stub
-		this.sr_state=a;
+		this.hs_sr_state=new HashSet<State>();
 		this.ev=b;
 		this.g=c;
 		this.ac=d;
-		this.td_state=e;
+		this.hs_td_state=new HashSet<State>();
 	}
 
-	public State getSr_state() {
-		return sr_state;
+	public HashSet<State> getHs_sr_state() {
+		return hs_sr_state;
 	}
 
-	public void setSr_state(State sr_state) {
-		this.sr_state = sr_state;
-	}
-
-	public State getTd_state() {
-		return td_state;
-	}
-
-	public void setTd_state(State td_state) {
-		this.td_state = td_state;
+	public HashSet<State> getHs_td_state() {
+		return hs_td_state;
 	}
 
 	public String getEv() {

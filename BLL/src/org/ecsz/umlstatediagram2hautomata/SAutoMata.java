@@ -1,4 +1,4 @@
-package org.ecsz.umlmodel2hautomata;
+package org.ecsz.umlstatediagram2hautomata;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +41,14 @@ public class SAutoMata {
 
 	public HashSet<State> getHs_state() {
 		return hs_state;
+	}
+
+	public State getInitial_state() {
+		return initial_state;
+	}
+
+	public void setInitial_state(State initial_state) {
+		this.initial_state = initial_state;
 	}
 
 	public State getStateById(String id) {

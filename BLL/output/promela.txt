@@ -1,0 +1,83 @@
+#define r2 1
+#define a1 2
+#define a2 3
+#define f1 4
+#define e1 5
+#define f2 6
+#define e2 7
+#define r1 8
+bit Qr2, Qa1, Qa2, Qf1, Qe1, Qf2, Qe2, Qr1;
+bit Ss3, Ss1, Ss6, Ss7, Ss10, Ss11, Ss9, Ss8, Ss2;
+int Ev
+#define CandEAID_6342A99A_31F4_4720_9A86_6632042B8C27 =  Ss1 & Ss10 & (Ev==e2)
+#define CandEAID_A289664F_A04F_49d0_98FF_3B930B1A6994 =  Ss2 & (Ev==a1)
+#define CandEAID_BC9B6011_33C9_48f7_8313_4906168361DC =  Ss1 & Ss8 & (Ev==r2)
+#define CandEAID_4E8800CF_FE13_4ec5_BD3F_8CEE1C912D65 =  Ss3 & (Ev==a2)
+#define CandEAID_D6702B02_EF82_4924_B4D4_D3E6800EE729 =  Ss1 & (Ev==e1)
+& !(Ss1 & Ss10 & (Ev==e2) )
+& !(Ss1 & Ss8 & (Ev==r2) )
+& !(Ss1 & Ss6 & (Ev==r1) )
+& !(Ss6 & (Ev==e1) )
+& !(Ss7 & (Ev==f1) )
+& !(Ss8 & (Ev==e2) )
+& !(Ss9 & (Ev==f2) )
+& !(Ss10 & (Ev==e2) )
+#define CandEAID_2C6C70B1_E148_43f1_995B_5B8765E549C5 =  Ss1 & Ss6 & (Ev==r1)
+#define CandEAID_A638434B_3DAA_4289_AF64_C1A64159981A =  Ss6 & (Ev==e1)
+#define CandEAID_607B580A_18A7_46ca_A54C_B59D9F85CD68 =  Ss7 & (Ev==f1)
+& !(Ss1 & Ss10 & (Ev==e2) )
+& !(Ss10 & (Ev==e2) )
+#define CandEAID_FB0C1B57_D0C0_479e_B776_4D9EFF0DCE54 =  Ss8 & (Ev==e2)
+#define CandEAID_9A91261D_9C6F_4b0e_95DB_1D72BC5CF598 =  Ss9 & (Ev==f2)
+#define CandEAID_FBC321D9_DDFF_4722_9DD1_CD5106099F1C =  Ss10 & (Ev==e2)
+proctype STEP()
+{
+do
+::
+atomic{
+if
+:: Qr2 -> Ev=r2;Qr2 = 0
+:: Qa1 -> Ev=a1;Qa1 = 0
+:: Qa2 -> Ev=a2;Qa2 = 0
+:: Qf1 -> Ev=f1;Qf1 = 0
+:: Qe1 -> Ev=e1;Qe1 = 0
+:: Qf2 -> Ev=f2;Qf2 = 0
+:: Qe2 -> Ev=e2;Qe2 = 0
+:: Qr1 -> Ev=r1;Qr1 = 0
+fi
+if
+:: CandEAID_6342A99A_31F4_4720_9A86_6632042B8C27->Ss1=0;Ss6=0;Ss7=0;Ss9=0;Ss8=0;Ss10=0;Ss11=0;Ss3=1;Qe2=1
+:: CandEAID_A289664F_A04F_49d0_98FF_3B930B1A6994->Ss2=0;Ss6=1;Ss8=1;Ss1=1;Qr2=1
+:: CandEAID_BC9B6011_33C9_48f7_8313_4906168361DC->Ss1=0;Ss6=0;Ss7=0;Ss9=0;Ss8=0;Ss10=0;Ss11=0;Ss3=1;Qa2=1
+:: CandEAID_4E8800CF_FE13_4ec5_BD3F_8CEE1C912D65->Ss3=0;Ss9=1;Ss6=1;Ss1=1;Qe1=1
+:: CandEAID_D6702B02_EF82_4924_B4D4_D3E6800EE729->Ss1=0;Ss6=0;Ss7=0;Ss9=0;Ss8=0;Ss10=0;Ss11=0;Ss2=1;
+:: CandEAID_2C6C70B1_E148_43f1_995B_5B8765E549C5->Ss1=0;Ss6=0;Ss7=0;Ss9=0;Ss8=0;Ss10=0;Ss11=0;Ss2=1;Qa1=1
+::(CandEAID_A638434B_3DAA_4289_AF64_C1A64159981A||CandEAID_607B580A_18A7_46ca_A54C_B59D9F85CD68||CandEAID_FB0C1B57_D0C0_479e_B776_4D9EFF0DCE54||CandEAID_9A91261D_9C6F_4b0e_95DB_1D72BC5CF598||CandEAID_FBC321D9_DDFF_4722_9DD1_CD5106099F1C)->
+if
+:: CandEAID_A638434B_3DAA_4289_AF64_C1A64159981A->Ss6=0;Ss10=1;Ss7=1;Qf1=1
+:: CandEAID_607B580A_18A7_46ca_A54C_B59D9F85CD68->Ss7=0;Ss10=0;Ss11=0;Ss6=1;Qr1=1
+::(CandEAID_FBC321D9_DDFF_4722_9DD1_CD5106099F1C)->
+if
+:: CandEAID_FBC321D9_DDFF_4722_9DD1_CD5106099F1C->Ss10=0;Ss11=1;Qe2=1
+::else->skip
+fi
+::else->skip
+fi
+if
+:: CandEAID_FB0C1B57_D0C0_479e_B776_4D9EFF0DCE54->Ss8=0;Ss9=1;Qe1=1
+:: CandEAID_9A91261D_9C6F_4b0e_95DB_1D72BC5CF598->Ss9=0;Ss8=1;
+::else->skip
+fi
+::else->skip
+fi
+}
+od
+}
+init
+{
+atomic{
+Ss3=0;Ss1=1;Ss6=1;Ss7=0;Ss10=0;Ss11=0;Ss9=0;Ss8=1;Ss2=0;
+Qr2=0;Qa1=0;Qa2=0;Qf1=0;Qe1=0;Qf2=0;Qe2=1;Qr1=0;
+};
+run STEP()
+}

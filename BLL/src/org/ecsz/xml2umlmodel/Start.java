@@ -4,18 +4,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ecsz.umlmodel2hautomata.State;
-import org.ecsz.umlmodel2hautomata.TransitionRelation;
+import org.ecsz.hautomata2promela.HAutoMata2Promela;
 import org.ecsz.model.Model;
 import org.ecsz.model.Package;
+import org.ecsz.sequencediagram.CombinedFragment;
+import org.ecsz.sequencediagram.LifeLine;
+import org.ecsz.sequencediagram.Message;
+import org.ecsz.sequencediagram.OccurrenceSpecification;
+import org.ecsz.sequencediagram.SequenceDiagram;
 import org.ecsz.statediagram.Region;
 import org.ecsz.statediagram.StateDiagram;
 import org.ecsz.statediagram.StateMachine;
 import org.ecsz.statediagram.Transition;
 import org.ecsz.statediagram.Vertex;
-import org.ecsz.umlmodel2hautomata.HAutoMata;
-import org.ecsz.umlmodel2hautomata.SAutoMata;
-import org.ecsz.umlmodel2hautomata.UMLModel2HAutoMata;
+import org.ecsz.umlstatediagram2hautomata.HAutoMata;
+import org.ecsz.umlstatediagram2hautomata.SAutoMata;
+import org.ecsz.umlstatediagram2hautomata.State;
+import org.ecsz.umlstatediagram2hautomata.TransitionRelation;
+import org.ecsz.umlstatediagram2hautomata.UMLStateDiagram2HAutoMata;
 
 public class Start {
 
@@ -24,12 +30,17 @@ public class Start {
 		XML2UMLModel xm=new XML2UMLModel("C:\\Users\\衡辰\\Desktop\\项目组\\项目实现情况\\UML-workspace\\BLL\\testmodels\\test5.xml");
 		Model model=xm.getUMLModel();
 		//输出模型
-		//out_model(model);
-		UMLModel2HAutoMata uh=new UMLModel2HAutoMata(model);
+		//out_model_statediagram(model);
+		//out_model_sequencediagram(model);
+		UMLStateDiagram2HAutoMata uh=new UMLStateDiagram2HAutoMata(model);
 		
 		List<HAutoMata> hautomata_list=uh.getHAutoMata();   
 		//输出自动机
-		out_hautomata(hautomata_list.get(0).getTop_sautomata(),"");
+		//out_hautomata(hautomata_list.get(0).getTop_sautomata(),"");
+		
+		HAutoMata2Promela hmp=new HAutoMata2Promela(hautomata_list);
+		
+		hmp.getPromela();
 	}
 	
 	protected static void out_hautomata(SAutoMata hm,String prefix) {
@@ -37,7 +48,16 @@ public class Start {
 		System.out.println(prefix+"SAutoMata name="+top_sm.getname()+" id="+top_sm.getid());
 		for(Iterator<TransitionRelation> it=top_sm.getHs_transition_relation().iterator();it.hasNext();) {
 			TransitionRelation tr=it.next();
-			System.out.println(prefix+"---transitionrelation SRC="+tr.getSrc_state().getname()+" SR="+tr.getTl().getSr_state().getname()+" EV="+tr.getTl().getEv()+" G="+tr.getTl().getG()+" AC="+tr.getTl().getAc()+" TD="+tr.getTl().getTd_state().getname()+" TGT="+tr.getTgt_state().getname());
+			String sr_state="";
+			for(Iterator<State> it2=tr.getTl().getHs_sr_state().iterator();it2.hasNext();) {
+				sr_state=sr_state+it2.next().getname();
+			}
+			String td_state="";
+			for(Iterator<State> it3=tr.getTl().getHs_td_state().iterator();it3.hasNext();) {
+				State state=it3.next();
+				td_state=td_state+state.getname();
+			}
+			System.out.println(prefix+"---transitionrelation SRC="+tr.getSrc_state().getname()+" SR="+sr_state+" EV="+tr.getTl().getEv()+" G="+tr.getTl().getG()+" AC="+tr.getTl().getAc()+" TD="+td_state+" TGT="+tr.getTgt_state().getname());
 		}
 		for(Iterator<State> it=top_sm.getHs_state().iterator();it.hasNext();) {
 			State state=it.next();
@@ -50,7 +70,37 @@ public class Start {
 		}
 	}
 	
-	protected static void out_model(Model model){
+	protected static void out_model_sequencediagram(Model model){
+		System.out.println("Mode name="+model.getname()+" id="+model.getid());
+		HashSet<Package> hs_package=model.getPackagesSet();
+		for(Iterator<Package> it_p=hs_package.iterator();it_p.hasNext();) {
+			Package p=it_p.next();
+			System.out.println("---Package name="+p.getname()+" id="+p.getid());
+			HashSet<SequenceDiagram> hs_sd=p.getSequenceDiagramsSet();
+			for(Iterator<SequenceDiagram> it_sd=hs_sd.iterator();it_sd.hasNext();) {
+				SequenceDiagram sd=it_sd.next();
+				System.out.println("------SequenceDiagram name="+sd.getName());
+				for(Iterator<LifeLine> it_ll=sd.getLl_list().iterator();it_ll.hasNext();) {
+					LifeLine ll=it_ll.next();
+					System.out.println("--------LifeLine name="+ll.getName());
+					for(Iterator<OccurrenceSpecification> it_os=ll.getAccspec_list().iterator();it_os.hasNext();) {
+						OccurrenceSpecification os=it_os.next();
+						System.out.println("----------OccurrenceSpecification related_message_order="+os.getMessage().getOrder());
+					}
+				}
+				for(Iterator<CombinedFragment> it_cf=sd.getFg_list().iterator();it_cf.hasNext();) {
+					CombinedFragment cf=it_cf.next();
+					System.out.println("--------CombinedFragment InteractionOperator="+cf.getInteractionOperator());
+				}
+				for(Iterator<Message> it_msg=sd.getMsg_list().iterator();it_msg.hasNext();) {
+					Message msg=it_msg.next();
+					System.out.println("--------Message name="+msg.getName()+" order="+msg.getOrder());
+				}
+			}
+		}
+	}
+	
+	protected static void out_model_statediagram(Model model){
 		System.out.println("Mode name="+model.getname()+" id="+model.getid());
 		HashSet<Package> hs_package=model.getPackagesSet();
 		for(Iterator<Package> it_p=hs_package.iterator();it_p.hasNext();) {

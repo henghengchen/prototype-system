@@ -1,4 +1,4 @@
-package org.ecsz.umlmodel2hautomata;
+package org.ecsz.umlstatediagram2hautomata;
 
 import java.util.HashSet;
 

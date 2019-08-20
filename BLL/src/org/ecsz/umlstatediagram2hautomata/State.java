@@ -1,4 +1,4 @@
-package org.ecsz.umlmodel2hautomata;
+package org.ecsz.umlstatediagram2hautomata;
 
 import java.util.HashSet;
 
@@ -6,6 +6,7 @@ public class State {
 
 	private String state_name;
 	private String state_id;
+	private String type;
 	private SAutoMata up_sautomata;
 	private HashSet<SAutoMata> hs_nested_sautomata;
 	
@@ -15,6 +16,14 @@ public class State {
 		// TODO Auto-generated constructor stub
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	public HashSet<SAutoMata> getHs_nested_sautomata() {
 		return hs_nested_sautomata;
 	}

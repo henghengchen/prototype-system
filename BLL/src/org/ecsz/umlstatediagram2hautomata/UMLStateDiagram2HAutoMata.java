@@ -1,10 +1,13 @@
-package org.ecsz.umlmodel2hautomata;
+package org.ecsz.umlstatediagram2hautomata;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
+import org.dom4j.Element;
 import org.ecsz.model.Model;
 import org.ecsz.model.Package;
 import org.ecsz.statediagram.Region;
@@ -13,11 +16,11 @@ import org.ecsz.statediagram.StateMachine;
 import org.ecsz.statediagram.Transition;
 import org.ecsz.statediagram.Vertex;
 
-public class UMLModel2HAutoMata {
+public class UMLStateDiagram2HAutoMata {
 
 	private Model model;
 	
-	public UMLModel2HAutoMata(Model m) {
+	public UMLStateDiagram2HAutoMata(Model m) {
 		this.model=m;
 		// TODO Auto-generated constructor stub
 	}
@@ -43,6 +46,8 @@ public class UMLModel2HAutoMata {
 		StateMachine sm=sd.getState_machine();
 		HashSet<Region> hs_region=sm.getregionsSet();
 		HashSet<Transition> hs_transition=getTransition(hs_region);
+		System.out.println("---"+hs_transition.size());
+		//参数为null 获取顶层region
 		HashSet<Region> hs_region_top=getRegion(hs_region,null);
 		
 		SAutoMata sautomata=null;
@@ -58,7 +63,10 @@ public class UMLModel2HAutoMata {
 		HashSet<String> hs_event=hautomata.getHs_event();
 		for(Iterator<Transition> it=hs_transition.iterator();it.hasNext();) {
 			Transition t=it.next();
-			hs_event.add(t.getTrigger());
+			if(t.getTrigger()!=null) {
+				hs_event.add(t.getTrigger());
+				System.out.println("---"+t.getid()+" "+t.getTrigger());
+			}
 		}
 		
 		return hautomata;
@@ -67,11 +75,9 @@ public class UMLModel2HAutoMata {
 	
 	/*
 	 * 问题：
-	 * 1、删去初始为状态
 	 * 2、从某状态进入一个复合状态时，进入状态为复合状态的内部状态
 	 */
 	protected void addtransition2sautomata(SAutoMata sautomata,HashSet<Transition> hs_transition) {
-		
 		for (Iterator<Transition> it1 = hs_transition.iterator(); it1.hasNext();) {
 			Transition transition=it1.next();
 			StateAndPath sp_s=getStatebyid(sautomata,transition.getSource_vertex_id());
@@ -99,14 +105,94 @@ public class UMLModel2HAutoMata {
 				//i是两个状态的最下层公共子自动机，Transition被添加到该自动机
 				String sautomata_id=path_s.get(i);
 				SAutoMata public_sautomata=getSAutoMatabyid(sautomata,sautomata_id);
-				HashSet<TransitionLabel> hs_transitionlabel=public_sautomata.getHs_transition_label();
-				HashSet<TransitionRelation> hs_TransitionRelation=public_sautomata.getHs_transition_relation();
-				TransitionLabel temp_tl=new TransitionLabel(sp_s.getState(),transition.getTrigger(),transition.getGuard(),transition.getAction(),sp_t.getState());
-				TransitionRelation temp_tr=new TransitionRelation(public_sautomata.getStateById(path_s.get(i+1)),temp_tl,public_sautomata.getStateById(path_t.get(i+1)));
+				TransitionLabel temp_tl=new TransitionLabel(transition.getTrigger(),transition.getGuard(),transition.getAction());
+				temp_tl.getHs_sr_state().add(sp_s.getState());
+				temp_tl.getHs_td_state().add(sp_t.getState());
+				TransitionRelation temp_tr=new TransitionRelation(transition.getid(),public_sautomata.getStateById(path_s.get(i+1)),temp_tl,public_sautomata.getStateById(path_t.get(i+1)));
 				public_sautomata.getHs_transition_label().add(temp_tl);
 				public_sautomata.getHs_transition_relation().add(temp_tr);
 			}
 		}
+		//
+		Queue<SAutoMata> SAutoMata_queue = new LinkedList<SAutoMata>();
+		SAutoMata_queue.offer(sautomata);
+		while(SAutoMata_queue.size()!=0) {
+			SAutoMata sm=SAutoMata_queue.poll();
+			State pseudostate = null;
+			//System.out.println("--------------------------name: "+sm.getname());
+			for(Iterator<State> it=sm.getHs_state().iterator();it.hasNext();) {
+				State state=it.next();
+				if(state.getHs_nested_sautomata().size()!=0) {
+					for(Iterator<SAutoMata> it2=state.getHs_nested_sautomata().iterator();it2.hasNext();) {
+						SAutoMata_queue.add(it2.next());
+					}
+				}
+				if(state.getType().equals("uml:Pseudostate")) {
+					pseudostate=state;
+				}
+			}
+			//设置初始状态并删除transition
+			for(Iterator<TransitionRelation> it2=sm.getHs_transition_relation().iterator();it2.hasNext();) {
+				TransitionRelation tr=it2.next();
+				if(tr.getSrc_state().getid().equals(pseudostate.getid())) {
+					sm.setInitial_state(tr.getTgt_state());
+					TransitionLabel tl=tr.getTl();
+					sm.getHs_transition_relation().remove(tr);
+					sm.getHs_transition_label().remove(tl);
+					break;
+				}
+			}
+			//删除状态
+			sm.getHs_state().remove(pseudostate);
+		}
+		
+		SAutoMata_queue.clear();
+		SAutoMata_queue.offer(sautomata);
+		while(SAutoMata_queue.size()!=0) {
+			SAutoMata sm=SAutoMata_queue.poll();
+			for(Iterator<State> it=sm.getHs_state().iterator();it.hasNext();) {
+				State state=it.next();
+				if(state.getHs_nested_sautomata().size()!=0) {
+					for(Iterator<SAutoMata> it2=state.getHs_nested_sautomata().iterator();it2.hasNext();) {
+						SAutoMata_queue.add(it2.next());
+					}
+				}
+			}
+			for(Iterator<TransitionRelation> it2=sm.getHs_transition_relation().iterator();it2.hasNext();) {
+				TransitionRelation tr=it2.next();
+				TransitionLabel tl=tr.getTl();
+				//图中获得的状态
+				State true_ori_state=tl.getHs_sr_state().iterator().next();
+				State true_tar_state=tl.getHs_td_state().iterator().next();
+				State cur_ori_state=tr.getSrc_state();
+				State cur_tar_state=tr.getTgt_state();
+				if(true_ori_state.getid().equals(cur_ori_state.getid())) {
+					tl.getHs_sr_state().clear();
+				}
+				HashSet<State> hs_state=tl.getHs_td_state();
+				if(true_tar_state.getid().equals(cur_tar_state.getid())) {//顺序自动机的源结点和真正的源节点相同，如果是并发的状态
+					if(true_tar_state.getHs_nested_sautomata().size()!=0) {
+						hs_state.clear();
+						for(Iterator<SAutoMata> it3=true_tar_state.getHs_nested_sautomata().iterator();it3.hasNext();) {
+							hs_state.add(it3.next().getInitial_state());
+						}
+					}else {
+						hs_state.clear();
+					}
+				}else {//顺序自动机的源结点和真正的源节点不同，如果真正的源状态有并发
+					for(Iterator<SAutoMata> it3=true_tar_state.getUp_sautomata().getUp_state().getHs_nested_sautomata().iterator();it3.hasNext();) {
+						SAutoMata sautoMata=it3.next();
+						State initial_state=sautoMata.getInitial_state();
+						//System.out.println("initial_state name="+initial_state.getname()+" id="+initial_state.getid()+"   true_tar_state name="+true_tar_state.getname()+" id="+true_tar_state.getid());
+						if(!true_tar_state.getUp_sautomata().getInitial_state().getid().equals(initial_state.getid())) {
+							//System.out.println("add state name="+initial_state.getname());
+							hs_state.add(initial_state);
+						}
+					}
+				}
+			}
+		}
+		
 	}
 	
 	protected SAutoMata getSAutoMatabyid(SAutoMata sautomata,String id) {
@@ -197,11 +283,6 @@ public class UMLModel2HAutoMata {
 		return hs_transition;
 	}
 	
-	
-	/*
-	 * 问题：
-	 * 1、没有设置初始状态
-	 */
 	protected SAutoMata create_sautomata(HashSet<Region> it_region, Region region) {//最上层的自动机没有上层状态
 		//System.out.println("--------------------------region "+region.getname());
 		SAutoMata sautomata=new SAutoMata();
@@ -212,6 +293,7 @@ public class UMLModel2HAutoMata {
 			State state=new State();
 			state.setname(temp_vertex.getname());
 			state.setid(temp_vertex.getid());
+			state.setType(temp_vertex.getType());
 			state.setUp_sautomata(sautomata);//设置状态的上层自动机
 			HashSet<Region> hs_region=getRegion(it_region,temp_vertex.getid());
 			if(hs_region.size()!=0) {
